@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Seru Pengukuran Berat Kelas 3 SD</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Font: Poppins for child-friendly appearance -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #fbcfe8 0%, #bae6fd 50%, #fef08a 100%);
+            background-attachment: fixed;
+        }
+        .bounce-custom {
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-700 flex flex-col justify-between p-4 sm:p-6">
+
+    <!-- Header / Banner -->
+    <header class="max-w-4xl mx-auto w-full text-center mb-6">
+        <div class="bg-white/80 backdrop-blur-md rounded-3xl p-6 shadow-xl border-4 border-yellow-300">
+            <span class="bg-yellow-400 text-yellow-900 text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">Matematika Kelas 3 SD</span>
+            <h1 class="text-2xl sm:text-4xl font-extrabold text-indigo-600 mt-2">Kuis Seru: Pengukuran Berat! 🍎⚖️</h1>
+            <p class="text-sm sm:text-base text-slate-600 mt-1">Jawab semua 30 soal konversi, perbandingan, dan cerita dengan teliti ya!</p>
+            
+            <!-- Progress Bar & Stats -->
+            <div class="mt-4 flex flex-wrap justify-between items-center bg-indigo-50 p-4 rounded-2xl gap-3">
+                <div class="flex items-center gap-2">
+                    <span class="text-sm font-semibold text-indigo-900">Progres Terisi:</span>
+                    <span id="answered-count" class="bg-indigo-600 text-white text-xs font-bold px-2.5 py-1 rounded-full">0 / 30</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-sm font-semibold text-emerald-900">Skor Sementara:</span>
+                    <span id="current-score" class="bg-emerald-600 text-white text-xs font-bold px-2.5 py-1 rounded-full">0 Poin</span>
+                </div>
+                <button onclick="resetQuiz()" class="text-xs bg-rose-500 hover:bg-rose-600 text-white font-bold py-1.5 px-3 rounded-xl transition shadow">Reset Kuis</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-4xl mx-auto w-full flex-grow mb-8">
+        
+        <!-- Navigation Grid (Soal 1-30 Selector) -->
+        <div class="bg-white/90 backdrop-blur-md rounded-3xl p-4 sm:p-6 shadow-xl border-2 border-indigo-100 mb-6">
+            <h2 class="text-sm font-bold text-slate-500 mb-3 uppercase tracking-wider">Pilih Nomor Soal:</h2>
+            <div id="nav-grid" class="grid grid-cols-6 sm:grid-cols-10 gap-2 max-h-40 overflow-y-auto p-1">
+                <!-- Javascript will populate buttons here -->
+            </div>
+        </div>
+
+        <!-- Question Card Box -->
+        <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border-4 border-indigo-200 relative overflow-hidden">
+            <!-- Category Tag -->
+            <div id="question-category" class="inline-block bg-sky-100 text-sky-800 text-xs font-bold px-3 py-1 rounded-lg mb-3">Bagian 1: Konversi Satuan Berat</div>
+            
+            <!-- Question Title/Number -->
+            <div class="flex justify-between items-start gap-4 mb-4">
+                <h3 id="question-title" class="text-lg sm:text-xl font-bold text-slate-800">Soal 1</h3>
+                <span id="question-badge" class="bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-1 rounded-full">Belum dijawab</span>
+            </div>
+
+            <!-- Question Text -->
+            <p id="question-text" class="text-base sm:text-lg font-medium text-slate-700 mb-6 bg-slate-50 p-4 rounded-2xl border border-slate-200 leading-relaxed">
+                Loading soal...
+            </p>
+
+            <!-- Options Container -->
+            <div id="options-container" class="space-y-3 mb-6">
+                <!-- Javascript will inject options here -->
+            </div>
+
+            <!-- Feedback Message Container -->
+            <div id="feedback-box" class="hidden p-4 rounded-2xl font-semibold text-sm mb-6 flex items-center gap-3">
+                <!-- Dynamic feedback text -->
+            </div>
+
+            <!-- Bottom Navigation Buttons (Prev / Next) -->
+            <div class="flex justify-between items-center pt-4 border-t border-slate-100">
+                <button onclick="prevQuestion()" id="btn-prev" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2.5 px-6 rounded-2xl transition disabled:opacity-50 disabled:cursor-not-allowed">
+                    ⬅️ Sebelumnya
+                </button>
+                <button onclick="nextQuestion()" id="btn-next" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-6 rounded-2xl transition shadow-lg shadow-indigo-200">
+                    Selanjutnya ➡️
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Submission / Result Banner Modal -->
+    <div id="result-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full text-center shadow-2xl border-4 border-yellow-300 animate-bounce-custom">
+            <div class="text-5xl mb-3">🏆</div>
+            <h2 class="text-2xl font-extrabold text-indigo-600 mb-2">Hebat! Kuis Selesai</h2>
+            <p class="text-slate-600 text-sm mb-4">Kamu telah menyelesaikan seluruh 30 soal pengukuran berat.</p>
+            <div class="bg-indigo-50 p-4 rounded-2xl mb-6">
+                <p class="text-xs text-indigo-500 font-semibold uppercase">Skor Akhir Kamu:</p>
+                <p id="final-score-text" class="text-3xl font-extrabold text-indigo-700 mt-1">0 / 30</p>
+            </div>
+            <button onclick="closeResultModal()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 rounded-2xl transition shadow-lg shadow-emerald-200">
+                Periksa Kembali Jawaban 😊
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="max-w-4xl mx-auto w-full text-center text-xs text-slate-500 py-4">
+        <p>Aplikasi Belajar Interaktif Matematika Kelas 3 SD • Data tersimpan otomatis di browser</p>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Database 30 Soal Lengkap
+        const questionsData = [
+            // BAGIAN 1: Konversi Satuan Berat (1-10)
+            { id: 1, cat: "Bagian 1: Konversi Satuan Berat", q: "2 kg sama dengan ... gram", options: ["200 gram", "2.000 gram", "20.000 gram", "2 kg"], ans: 1 },
+            { id: 2, cat: "Bagian 1: Konversi Satuan Berat", q: "5.000 gram sama dengan ... kg", options: ["5 kg", "50 kg", "500 kg", "5.000 kg"], ans: 0 },
+            { id: 3, cat: "Bagian 1: Konversi Satuan Berat", q: "3 kg sama dengan ... ons (hg)", options: ["3 ons", "30 ons", "300 ons", "3.000 ons"], ans: 1 },
+            { id: 4, cat: "Bagian 1: Konversi Satuan Berat", q: "40 ons sama dengan ... kg", options: ["4 kg", "40 kg", "400 kg", "4.000 kg"], ans: 0 },
+            { id: 5, cat: "Bagian 1: Konversi Satuan Berat", q: "2 kg 300 gram jika diubah ke dalam satuan gram menjadi ...", options: ["230 gram", "2.030 gram", "2.300 gram", "2.330 gram"], ans: 2 },
+            { id: 6, cat: "Bagian 1: Konversi Satuan Berat", q: "4.500 gram sama dengan ...", options: ["4 kg 50 gram", "4 kg 500 gram", "45 kg 0 gram", "4 kg 5.000 gram"], ans: 1 },
+            { id: 7, cat: "Bagian 1: Konversi Satuan Berat", q: "5 ons sama dengan ... gram", options: ["5 gram", "50 gram", "500 gram", "5.000 gram"], ans: 2 },
+            { id: 8, cat: "Bagian 1: Konversi Satuan Berat", q: "700 gram sama dengan ... ons", options: ["7 ons", "70 ons", "700 ons", "7.000 ons"], ans: 0 },
+            { id: 9, cat: "Bagian 1: Konversi Satuan Berat", q: "1 kg 5 ons jika dijadikan ons adalah ...", options: ["15 ons", "105 ons", "150 ons", "1.005 ons"], ans: 0 },
+            { id: 10, cat: "Bagian 1: Konversi Satuan Berat", q: "3.000 gram sama dengan ... ons", options: ["3 ons", "30 ons", "300 ons", "3.000 ons"], ans: 1 },
+
+            // BAGIAN 2: Membandingkan Berat dengan Satuan Berbeda (11-20)
+            { id: 11, cat: "Bagian 2: Membandingkan Berat", q: "Manakah yang lebih berat antara 2 kg dan 1.500 gram?", options: ["2 kg", "1.500 gram", "Keduanya sama berat", "Tidak bisa ditentukan"], ans: 0 },
+            { id: 12, cat: "Bagian 2: Membandingkan Berat", q: "Tanda pembanding yang tepat untuk mengisi titik-titik di bawah ini adalah ...<br>3 kg ... 2.500 gram", options: [">", "<", "=", "+"], ans: 0 },
+            { id: 13, cat: "Bagian 2: Membandingkan Berat", q: "Manakah yang lebih ringan antara 4 kg dan 45 ons?", options: ["4 kg", "45 ons", "Beratnya sama", "Sangat berat"], ans: 0 },
+            { id: 14, cat: "Bagian 2: Membandingkan Berat", q: "Perhatikan perbandingan berikut: 2.000 gram ... 2 kg. Tanda yang tepat adalah ...", options: [">", "<", "=", "-"], ans: 2 },
+            { id: 15, cat: "Bagian 2: Membandingkan Berat", q: "15 ons ... 1 kg. Tanda perbandingan yang tepat adalah ...", options: [">", "<", "=", "x"], ans: 0 },
+            { id: 16, cat: "Bagian 2: Membandingkan Berat", q: "Di bawah ini manakah berat yang nilainya paling kecil?", options: ["3 kg", "3.500 gram", "29 ons", "32 ons"], ans: 2 },
+            { id: 17, cat: "Bagian 2: Membandingkan Berat", q: "Ibu membeli 4 kg gula dan 38 ons tepung. Bahan yang lebih berat adalah ...", options: ["Gula", "Tepung", "Beratnya sama", "Tidak ada yang berat"], ans: 0 },
+            { id: 18, cat: "Bagian 2: Membandingkan Berat", q: "Hasil dari perbandingan berikut yang benar adalah ...", options: ["500 gram > 6 ons", "2 kg = 20 ons", "35 ons > 4 kg", "1.000 gram > 2 kg"], ans: 1 },
+            { id: 19, cat: "Bagian 2: Membandingkan Berat", q: "Urutan berat benda dari yang paling ringan ke yang paling berat di bawah ini yang benar adalah ...", options: ["2 kg, 1.500 gram, 3 kg", "1.500 gram, 3 kg, 20 ons", "1.500 gram, 20 ons, 3 kg", "3 kg, 20 ons, 1.500 gram"], ans: 2 },
+            { id: 20, cat: "Bagian 2: Membandingkan Berat", q: "500 gram + 1 kg ... 2 kg. Tanda pembanding yang tepat adalah ...", options: [">", "<", "=", "x"], ans: 1 },
+
+            // BAGIAN 3: Soal Cerita Terkait Berat dan Konversinya (21-30)
+            { id: 21, cat: "Bagian 3: Soal Cerita Berat", q: "Ibu membeli 2 kg beras dan 500 gram gula. Berapa gram total belanjaan ibu seluruhnya?", options: ["2.050 gram", "2.500 gram", "2.005 gram", "5.200 gram"], ans: 1 },
+            { id: 22, cat: "Bagian 3: Soal Cerita Berat", q: "Ayah membawa semangka seberat 3 kg dan melon seberat 20 ons. Berapa kg total berat buah yang dibawa ayah?", options: ["3 kg", "4 kg", "5 kg", "23 kg"], ans: 2 },
+            { id: 23, cat: "Bagian 3: Soal Cerita Berat", q: "Bibi mempunyai persediaan tepung terigu 4 kg. Digunakan untuk membuat kue sebanyak 2.500 gram. Sisa tepung terigu bibi adalah ...", options: ["1.500 gram", "2.000 gram", "2.500 gram", "3.500 gram"], ans: 0 },
+            { id: 24, cat: "Bagian 3: Soal Cerita Berat", q: "Di dalam keranjang terdapat 3 kg mangga dan 2.000 gram apel. Berapa ons berat seluruh buah di dalam keranjang?", options: ["5 ons", "50 ons", "500 ons", "5.000 ons"], ans: 1 },
+            { id: 25, cat: "Bagian 3: Soal Cerita Berat", q: "Ani membeli 5 kg telur. Di perjalanan, 1 kg telur pecah. Berapa gram sisa telur Ani yang masih utuh?", options: ["400 gram", "4.000 gram", "5.000 gram", "6.000 gram"], ans: 1 },
+            { id: 26, cat: "Bagian 3: Soal Cerita Berat", q: "Pak Tono memanen 15 kg mangga. Sebanyak 100 ons mangga dijual ke pasar, dan sisanya dibagikan ke tetangga. Berapa kg mangga yang dibagikan ke tetangga?", options: ["5 kg", "10 kg", "14 kg", "15 kg"], ans: 0 },
+            { id: 27, cat: "Bagian 3: Soal Cerita Berat", q: "Tas sekolah Andi berisi buku-buku seberat 2.000 gram dan kotak pensil seberat 1.000 gram. Berapa kg berat seluruh isi tas Andi?", options: ["2 kg", "3 kg", "30 kg", "300 kg"], ans: 1 },
+            { id: 28, cat: "Bagian 3: Soal Cerita Berat", q: "Siti membeli 3 kantong gula pasir. Setiap kantong beratnya 500 gram. Berapa kg berat seluruh gula pasir Siti?", options: ["1,5 kg", "3 kg", "3,5 kg", "15 kg"], ans: 0 },
+            { id: 29, cat: "Bagian 3: Soal Cerita Berat", q: "Berat badan Budi 30 kg, sedangkan berat badan Adi 280 hg. Selisih berat badan mereka adalah ...", options: ["2 kg", "20 kg", "250 kg", "310 kg"], ans: 0 },
+            { id: 30, cat: "Bagian 3: Soal Cerita Berat", q: "Sebuah toko sembako memiliki 6 kg beras. Hari ini terjual 4.000 gram. Sisa beras di toko sekarang adalah ...", options: ["2 kg", "4 kg", "6 kg", "10 kg"], ans: 0 }
+        ];
+
+        // State Management stored in localStorage
+        let currentQuestionIndex = 0;
+        let userAnswers = JSON.parse(localStorage.getItem('sd3_user_answers')) || {}; // key: questionIndex, val: optionIndex
+        let isCompletedChecked = false;
+
+        // Initialize App on Load
+        window.onload = function() {
+            renderNavGrid();
+            loadQuestion(currentQuestionIndex);
+            updateStats();
+        };
+
+        // Render the navigation button grid (1-30)
+        function renderNavGrid() {
+            const grid = document.getElementById('nav-grid');
+            grid.innerHTML = '';
+            
+            questionsData.forEach((q, index) => {
+                const btn = document.createElement('button');
+                btn.innerText = index + 1;
+                btn.className = `h-10 w-full rounded-xl font-bold text-sm transition border-2 flex items-center justify-center shadow-sm`;
+                
+                // Style based on status
+                if (userAnswers[index] !== undefined) {
+                    const isCorrect = userAnswers[index] === questionsData[index].ans;
+                    if (isCorrect) {
+                        btn.className += ` bg-emerald-500 text-white border-emerald-600 hover:bg-emerald-600`;
+                    } else {
+                        btn.className += ` bg-rose-500 text-white border-rose-600 hover:bg-rose-600`;
+                    }
+                } else {
+                    btn.className += ` bg-white text-slate-600 border-slate-200 hover:bg-indigo-50 hover:border-indigo-300`;
+                }
+
+                // Highlight active question
+                if (index === currentQuestionIndex) {
+                    btn.className += ` ring-4 ring-indigo-300`;
+                }
+
+                btn.onclick = () => {
+                    currentQuestionIndex = index;
+                    loadQuestion(currentQuestionIndex);
+                    renderNavGrid();
+                };
+
+                grid.appendChild(btn);
+            });
+        }
+
+        // Load specific question details into DOM
+        function loadQuestion(index) {
+            const qData = questionsData[index];
+            
+            document.getElementById('question-category').innerText = qData.cat;
+            document.getElementById('question-title').innerText = `Soal Nomor ${index + 1} dari 30`;
+            document.getElementById('question-text').innerHTML = qData.q;
+
+            const badge = document.getElementById('question-badge');
+            const feedbackBox = document.getElementById('feedback-box');
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            const userChoice = userAnswers[index];
+
+            // Render options A, B, C, D
+            const labels = ['A', 'B', 'C', 'D'];
+            qData.options.forEach((optText, optIndex) => {
+                const optBtn = document.createElement('button');
+                optBtn.className = `w-full text-left p-4 rounded-2xl font-semibold border-2 transition flex items-center gap-4 text-sm sm:text-base `;
+                
+                const labelSpan = document.createElement('span');
+                labelSpan.innerText = labels[optIndex];
+                labelSpan.className = `w-8 h-8 rounded-xl flex items-center justify-center font-bold text-xs shrink-0 `;
+
+                let customStyle = ` bg-slate-100 text-slate-700 border-slate-200 hover:bg-indigo-50 hover:border-indigo-300`;
+                let labelStyle = ` bg-slate-200 text-slate-700`;
+
+                if (userChoice !== undefined) {
+                    optBtn.disabled = true; // Disable further clicking once answered
+                    if (optIndex === qData.ans) {
+                        customStyle = ` bg-emerald-50 text-emerald-900 border-emerald-400 font-bold`;
+                        labelStyle = ` bg-emerald-500 text-white`;
+                    } else if (optIndex === userChoice && userChoice !== qData.ans) {
+                        customStyle = ` bg-rose-50 text-rose-900 border-rose-400`;
+                        labelStyle = ` bg-rose-500 text-white`;
+                    } else {
+                        customStyle = ` bg-slate-50 text-slate-400 border-slate-100 opacity-60`;
+                        labelStyle = ` bg-slate-200 text-slate-400`;
+                    }
+                }
+
+                optBtn.className += customStyle;
+                labelSpan.className += labelStyle;
+
+                optBtn.appendChild(labelSpan);
+                const textSpan = document.createElement('span');
+                textSpan.innerHTML = optText;
+                optBtn.appendChild(textSpan);
+
+                if (userChoice === undefined) {
+                    optBtn.onclick = () => selectAnswer(index, optIndex);
+                }
+
+                optionsContainer.appendChild(optBtn);
+            });
+
+            // Show feedback status if already answered
+            if (userChoice !== undefined) {
+                badge.innerText = "Sudah dijawab";
+                badge.className = "bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-full";
+                
+                feedbackBox.classList.remove('hidden');
+                if (userChoice === qData.ans) {
+                    feedbackBox.className = "p-4 rounded-2xl font-semibold text-sm mb-6 flex items-center gap-3 bg-emerald-100 text-emerald-800 border border-emerald-300";
+                    feedbackBox.innerHTML = `🎉 Yey, Jawaban Kamu Benar! Hebat sekali!`;
+                } else {
+                    feedbackBox.className = "p-4 rounded-2xl font-semibold text-sm mb-6 flex items-center gap-3 bg-rose-100 text-rose-800 border border-rose-300";
+                    feedbackBox.innerHTML = `❌ Kurang tepat. Jawaban yang benar adalah pilihan <b>${labels[qData.ans]}</b> (${qData.options[qData.ans]}).`;
+                }
+            } else {
+                badge.innerText = "Belum dijawab";
+                badge.className = "bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-1 rounded-full";
+                feedbackBox.classList.add('hidden');
+            }
+
+            // Navigation button states
+            document.getElementById('btn-prev').disabled = index === 0;
+            document.getElementById('btn-next').innerText = index === questionsData.length - 1 ? "Selesai 🏁" : "Selanjutnya ➡️";
+        }
+
+        // Handle user selecting an option
+        function selectAnswer(qIndex, optIndex) {
+            userAnswers[qIndex] = optIndex;
+            // Save state immediately to localStorage so refresh/network drop doesn't erase progress
+            localStorage.setItem('sd3_user_answers', JSON.stringify(userAnswers));
+            
+            loadQuestion(qIndex);
+            renderNavGrid();
+            updateStats();
+
+            // Check if all questions are completed
+            const answeredCount = Object.keys(userAnswers).length;
+            if (answeredCount === questionsData.length && !isCompletedChecked) {
+                isCompletedChecked = true;
+                setTimeout(showResultModal, 600);
+            }
+        }
+
+        // Update top status counters
+        function updateStats() {
+            const answeredCount = Object.keys(userAnswers).length;
+            document.getElementById('answered-count').innerText = `${answeredCount} / 30`;
+
+            let score = 0;
+            for (let qIdx in userAnswers) {
+                if (userAnswers[qIdx] === questionsData[qIdx].ans) {
+                    score += 1;
+                }
+            }
+            document.getElementById('current-score').innerText = `${score * 3.33 > 99 ? 100 : Math.round(score * 3.33)} Poin (${score}/30)`;
+        }
+
+        // Navigation controls
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion(currentQuestionIndex);
+                renderNavGrid();
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < questionsData.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion(currentQuestionIndex);
+                renderNavGrid();
+            } else {
+                showResultModal();
+            }
+        }
+
+        // Reset Quiz Data
+        function resetQuiz() {
+            if (confirm("Apakah kamu yakin ingin mengulang kuis dari awal? Semua jawaban akan dihapus.")) {
+                userAnswers = {};
+                localStorage.removeItem('sd3_user_answers');
+                currentQuestionIndex = 0;
+                isCompletedChecked = false;
+                loadQuestion(0);
+                renderNavGrid();
+                updateStats();
+            }
+        }
+
+        // Modal triggers
+        function showResultModal() {
+            let score = 0;
+            for (let qIdx in userAnswers) {
+                if (userAnswers[qIdx] === questionsData[qIdx].ans) {
+                    score += 1;
+                }
+            }
+            document.getElementById('final-score-text').innerText = `${score} dari 30 Soal Benar`;
+            document.getElementById('result-modal').classList.remove('hidden');
+        }
+
+        function closeResultModal() {
+            document.getElementById('result-modal').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
